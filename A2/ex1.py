@@ -1,0 +1,8 @@
+print("Hello World!")
+print("Hello Again")
+print("I like typing this.")
+print("This is fun.")
+print('Yay! Printing.')
+print("I'd much rather you 'not'.")
+print('I "said" do not touch this.')
+print("How many \"fun\" tricks that I learned with C\ncan I put in this\tone\t line of code?")
