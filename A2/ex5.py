@@ -24,3 +24,10 @@ print(f"If I add {age}, {height}, and {weight} I get {total}.")
 height_in_cm = height * 2.54
 weight_in_kg = weight * 0.453592
 print(f"He's {height_in_cm}cm tall and weighs {weight_in_kg}kg.")
+
+print("Hi".center(30))
+print("I\ttalk\tvery\tslowly".expandtabs(11))
+print("HELLO!".isupper())
+
+print("I am 6'2\" tall.")
+print("print(\"I am 6'2\\\" tall.\")")
