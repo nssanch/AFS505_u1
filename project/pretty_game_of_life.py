@@ -9,6 +9,8 @@
 ..moduleauthor:: Natalie Sanchez natalies.sanchez98@gmail.com
 
 '''
+import pygame
+
 def main():
     '''Runs a simulation of Conway's Game of Life
 
@@ -73,6 +75,12 @@ def draw_grid(cell_grid):
     :type cell_grid: any 2D list with values that can be interpreted as boolean
 
     '''
+    #surface = pygame.image.load('foo.png').convert()
+    #pygame.display.update(a rectangle or some list of rectangles)
+    screen = pygame.display.set_mode()
+
+    # blit(), fill(), set_at() and get_at()
+    #
     for y in range(len(cell_grid)):
         for x in range(len(cell_grid[y])):
             if cell_grid[y][x]:     #If ON
