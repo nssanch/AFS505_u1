@@ -12,7 +12,7 @@
 import pygame
 
 def main():
-    '''Runs a simulation of Conway's Game of Life
+    '''Runs a simulat ion of Conway's Game of Life
 
     Takes the number of generations the simulation will run for
     and the initial ON cells from the command line
@@ -21,12 +21,16 @@ def main():
     from sys import argv
     script, runtime, *init_cells = argv
 
-    #Initialize 2D array that contains alive/dead info with given number of rows and columns
+    #Initialize 2D arrays that contains alive/dead info with given number of rows and columns
     cols = 80
     rows = 30
     cells = []
+    old_cells = []
+    neighbours = []
     for y in range(rows):
         cells.append([0]*cols)
+        old_cells.append([0]*cols)
+        neighbours.append([0]*cols)
 
     #Turn on initial cells from command line input
     for cell in init_cells:
@@ -37,50 +41,96 @@ def main():
         #Mark this cell as alive with an 1
         cells[y][x] = 1
 
-    #create a neighbour value for each cell that is equal to the number on ON neighbours
-    neighbours = []
-    #Start neighbour value at 0
-    for y in range(rows):
-        neighbours.append([0]*cols)
+    #Things you need to do in order to have pretty graphics
+    pygame.init()
 
+    #Set cell sizes and positions and initialie screen
+    cell_size = cell_x, cell_y = 10, 10
+    pt = 2
+    ulx = 200
+    uly = 100
+    canvas = pygame.display.set_mode((1600,900))
+    canvas.fill((0, 0, 0))
+
+    #Make a list of rects that represent each cell
+    rects = []
+    for y in range(rows):
+        new_rects = []
+        for x in range(cols):
+            new_rects.append(((ulx+(cell_x+pt)*x,uly+(cell_y+pt)*y), cell_size))
+        rects.append(new_rects)
+    #Make each cell teal
+    for y in range(rows):
+        for x in range(cols):
+            pygame.draw.rect(canvas, (0, 255, 160), rects[y][x])
+
+    #Make the generation counter display
+    words = pygame.font.Font('freesansbold.ttf', 14).render('Generation: ', True, (240, 240, 240))
+    words_rect = words.get_rect(center = (ulx+50, uly+(cell_y+pt)*(rows+1)))
+    canvas.blit(words, words_rect)
+
+    pygame.display.flip()
 
     #Run the Simulation
     #Set the generation count to 0
+
     gen = 0
     while gen <= int(runtime):
 
         #Display Grid
-        draw_grid(cells)
+        draw_grid(cells, old_cells, canvas, rects, gen)
+        counter = pygame.font.Font('freesansbold.ttf', 14).render(str(gen), True, (240, 240, 240))
+        counter_rect = counter.get_rect(center = (ulx+words_rect.width+10, uly+(cell_y+pt)*(rows+1)))
+        pygame.draw.rect(canvas, (0,0,0),counter_rect)
+        canvas.blit(counter, counter_rect)
+        pygame.display.update(counter_rect)
+        print_grid(cells)
         print(f"Generation: {gen}")
 
         #Determine how many neighbours are ON
         neighbours = get_neighbour_values(cells, neighbours)
 
         #Update cells
+        for y in range(rows):
+            for x in range(cols):
+                old_cells[y][x] = cells[y][x]
         cells = update(cells, neighbours)
 
         #move to next generation
         gen += 1
+        pygame.time.wait(200)
 
+    pygame.time.wait(2000)
     print("\nGoodbye")
 
 ##### END OF MAIN #####
 
-def draw_grid(cell_grid):
-    '''Prints the 2D list to STDOUT in rows and columns
-
-    uses '-' if the cell is OFF and a 'X' if ON
+def draw_grid(cell_grid, last_g, screen, surrects, g):
+    '''Draws a pretty picture representing the ON and OFF cells
 
     :param cell_grid: The list that stores each cell's ON or OFF value
     :type cell_grid: any 2D list with values that can be interpreted as boolean
 
-    '''
-    #surface = pygame.image.load('foo.png').convert()
-    #pygame.display.update(a rectangle or some list of rectangles)
-    screen = pygame.display.set_mode()
+    :param old_cells: The list that stores each cell's ON or OFF value for the previous generation
+    :type old_cells: any 2D list with values that can be interpreted as boolean
 
-    # blit(), fill(), set_at() and get_at()
-    #
+    '''
+    updated_rects = []
+    for y in range(len(cell_grid)):
+        for x in range(len(cell_grid[y])):
+            if cell_grid[y][x] == last_g[y][x]:
+                pass
+            elif cell_grid[y][x] == 1:
+                pygame.draw.rect(screen, (0, 0, 255), surrects[y][x])
+                updated_rects.append(surrects[y][x])
+            elif cell_grid[y][x] == 0:
+                pygame.draw.rect(screen, (0, 255, 0), surrects[y][x])
+                updated_rects.append(surrects[y][x])
+    pygame.display.update(updated_rects)
+
+
+
+def print_grid(cell_grid):
     for y in range(len(cell_grid)):
         for x in range(len(cell_grid[y])):
             if cell_grid[y][x]:     #If ON
